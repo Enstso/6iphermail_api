@@ -11,7 +11,7 @@ export default class AuthController {
         return response.safeStatus(201).json({message:"User created!"})
     }
 
-    public async login({ auth,request,response}: HttpContext) {
+    public async login({ request,response }: HttpContext) {
         const data = request.all()
         await loginValidator.validate(data)
         return response.safeStatus(200).json({message:`Welcome ${data.email}`})
