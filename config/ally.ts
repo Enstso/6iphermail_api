@@ -7,21 +7,23 @@ const allyConfig = defineConfig({
     clientSecret: env.get('GOOGLE_CLIENT_SECRET'),
     callbackUrl: 'http://localhost:3333/api/auth/login/google/callback',
   }),
-  facebook: services.facebook({
-    clientId: env.get('FACEBOOK_CLIENT_ID'),
-    clientSecret: env.get('FACEBOOK_CLIENT_SECRET'),
-    callbackUrl: '',
-  }),
   linkedin: services.linkedin({
     clientId: env.get('LINKEDIN_CLIENT_ID'),
     clientSecret: env.get('LINKEDIN_CLIENT_SECRET'),
-    callbackUrl: '',
+    callbackUrl: 'http://localhost:3333/api/auth/login/linkedin/callback',
+    scopes: ['openid', 'profile','email'],
   }),
-  twitter: services.twitter({
-    clientId: env.get('TWITTER_CLIENT_ID'),
-    clientSecret: env.get('TWITTER_CLIENT_SECRET'),
-    callbackUrl: '',
+  github: services.github({
+    clientId: env.get('GITHUB_CLIENT_ID'),
+    clientSecret: env.get('GITHUB_CLIENT_SECRET'),
+    callbackUrl: 'http://localhost:3333/api/auth/login/github/callback',
   }),
+  discord: services.discord({
+    clientId: env.get('DISCORD_CLIENT_ID'),
+    clientSecret: env.get('DISCORD_CLIENT_SECRET'),
+    callbackUrl: 'http://localhost:3333/api/auth/login/discord/callback',
+  }),
+
 })
 
 export default allyConfig
