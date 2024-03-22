@@ -15,6 +15,7 @@ import router from '@adonisjs/core/services/router'
 router.group(() => {
     router.post('/auth/register',[AuthController,'register']);
     router.post('/auth/login',[AuthController,'login']);
+    
     /*
     router.get('/auth/linkedin/register', [SocialController, 'linkedinRedirect'])
     router.get('/auth/login/linkedin/callback', [SocialController, 'linkedinCallback'])
