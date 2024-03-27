@@ -24,6 +24,7 @@ export default class AuthController {
         if(!verifyPassword){
             response.abort('Invalid credentials')
         }
+        
         return response.safeStatus(200).json({token:await this.token(user),message:"Login successful!"})
     }
 
@@ -34,4 +35,8 @@ export default class AuthController {
             value: token.value!.release()
         }
     }
-}
+} 
+
+/*
+
+*/
