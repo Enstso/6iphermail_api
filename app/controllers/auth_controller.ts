@@ -2,9 +2,12 @@ import User from '#models/user';
 import { loginValidator } from '#validators/login_user';
 import { registerValidator } from '#validators/register_user';
 import { type HttpContext } from '@adonisjs/core/http'
+import authProvider from '../providers/auth_provider.js';
+
 import hash from '@adonisjs/core/services/hash';
 
 export default class AuthController {
+    private auth_provider: authProvider = new authProvider()
     public async register({ request,response }: HttpContext) {
         const data = request.all()
         const payload = await registerValidator.validate(data)
@@ -25,16 +28,10 @@ export default class AuthController {
             response.abort('Invalid credentials')
         }
         
-        return response.safeStatus(200).json({token:await this.token(user),message:"Login successful!"})
+    return response.safeStatus(200).json({token:await this.auth_provider.token(user),message:"Login successful!"})
     }
 
-     private async token(user:User) {
-        const token =  await User.accessTokens.create(user)
-        return {
-            type:'bearer',
-            value: token.value!.release()
-        }
-    }
+     
 } 
 
 /*

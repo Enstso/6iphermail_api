@@ -1,5 +1,5 @@
 import Auth from "#models/auth";
-
+import User from "#models/user";
 export default class authProvider {
 
     constructor() { }
@@ -19,6 +19,18 @@ export default class authProvider {
             id_google_provider: id_google_provider,
             id_github_provider: id_github_provider
         })
+    }
+
+    public async exists(type_provider:string,id_provider:string): Promise<boolean> {
+        return await true ? Auth.findBy(type_provider, id_provider) != null : false
+    }
+
+    public async token(user:User) {
+        const token =  await User.accessTokens.create(user)
+        return {
+            type:'bearer',
+            value: token.value!.release()
+        }
     }
 
 }

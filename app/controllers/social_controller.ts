@@ -2,8 +2,8 @@ import type { HttpContext } from '@adonisjs/core/http'
 import userProvider from '../providers/user_provider.js';
 import authProvider from '../providers/auth_provider.js';
 import User from '#models/user';
-import { time } from 'console';
-import { TIMEOUT } from 'dns';
+import { oauthValidator } from '#validators/oauth';
+
 export default class SocialController {
     private user_provider: userProvider = new userProvider()
     private auth_provider: authProvider = new authProvider()
@@ -18,7 +18,7 @@ export default class SocialController {
     */
 
     async googleCallback({ ally, response }: HttpContext) {
-        
+
         const google = ally.use('google')
         /**
    * User has denied access by canceling
@@ -50,12 +50,22 @@ export default class SocialController {
         const user = await google.user()
         const exist = await this.user_provider.exists(user.email)
 
-        if (!exist) {
-            await this.user_provider.create({ username: user.nickName, email: user.email}, true)
-            const user_db = await User.findByOrFail('email', user.email)
-            this.auth_provider.create(user_db.id, { id_google_provider: user.id })
+        if (user.emailVerificationState === 'verified') {
+            if (exist) {
+                const user_db = await User.findByOrFail('email', user.email)
+                if (await this.auth_provider.exists('id_google_provider', user.id)) {
+                    this.user_provider.active(user_db)
+                    return this.auth_provider.token(user_db)
+                }
+            } else {
+                const paylaod = await oauthValidator.validate({ username: user.nickName, email: user.email })
+                await this.user_provider.create(paylaod, true)
+                const user_db = await User.findByOrFail('email', user.email)
+                this.auth_provider.create(user_db.id, { id_google_provider: user.id })
+                return response.safeStatus(201).json({ message: "User created!" })
+            }
         }
-
+        return response.abort('Email not verified')
 
     }
 
@@ -95,12 +105,22 @@ export default class SocialController {
         const user = await gh.user()
         const exist = await this.user_provider.exists(user.email)
 
-        if (!exist) {
-            await this.user_provider.create({ username: user.nickName, email: user.email}, true)
-            const user_db = await User.findByOrFail('email', user.email)
-            this.auth_provider.create(user_db.id, { id_github_provider: user.id })
+        if (user.emailVerificationState === 'verified') {
+            if (exist) {
+                const user_db = await User.findByOrFail('email', user.email)
+                if (await this.auth_provider.exists('id_github_provider', user.id)) {
+                    this.user_provider.active(user_db)
+                    return this.auth_provider.token(user_db)
+                }
+            } else {
+                const paylaod = await oauthValidator.validate({ username: user.nickName, email: user.email })
+                await this.user_provider.create(paylaod, true)
+                const user_db = await User.findByOrFail('email', user.email)
+                this.auth_provider.create(user_db.id, { id_google_provider: user.id })
+                return response.safeStatus(201).json({ message: "User created!" })
+            }
         }
-        return user
+        return response.abort('Email not verified')
 
     }
 
@@ -140,12 +160,22 @@ export default class SocialController {
         const user = await discord.user()
         const exist = await this.user_provider.exists(user.email)
 
-        if (!exist) {
-            await this.user_provider.create({ username: user.nickName, email: user.email}, true)
-            const user_db = await User.findByOrFail('email', user.email)
-            this.auth_provider.create(user_db.id, { id_discord_provider: user.id })
+        if (user.emailVerificationState === 'verified') {
+            if (exist) {
+                const user_db = await User.findByOrFail('email', user.email)
+                if (await this.auth_provider.exists('id_google_provider', user.id)) {
+                    this.user_provider.active(user_db)
+                    return this.auth_provider.token(user_db)
+                }
+            } else {
+                const paylaod = await oauthValidator.validate({ username: user.nickName, email: user.email })
+                await this.user_provider.create(paylaod, true)
+                const user_db = await User.findByOrFail('email', user.email)
+                this.auth_provider.create(user_db.id, { id_discord_provider: user.id })
+                return response.safeStatus(201).json({ message: "User created!" })
+            }
         }
-        return user
+        return response.abort('Email not verified')
 
     }
 }
