@@ -1,5 +1,8 @@
 import Auth from "#models/auth";
 import User from "#models/user";
+import { Encryption } from "@adonisjs/core/encryption";
+import encryption from '@adonisjs/core/services/encryption';
+
 export default class authProvider {
 
     constructor() { }
@@ -32,6 +35,16 @@ export default class authProvider {
             value: token.value!.release()
         }
     }
+
+    public async revokeToken(user:User) {
+        await User.accessTokens.delete(user,user.id)
+    }
+
+    public encryptInformation(encryption:Encryption,{email,token}:{email:string,token:string}):string {
+        return  encryption.encrypt({email,token})
+    }
+
+
 
 }
 

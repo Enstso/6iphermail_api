@@ -28,4 +28,5 @@ router.group(()=>{
     router.get('/github/callback', [SocialController, 'githubCallback'])
     router.get('/google', [SocialController, 'googleRedirect'])
     router.get('/google/callback', [SocialController, 'googleCallback'])
+    router.post('/logout',[AuthController,'logout']);
 }).prefix('/api/auth')
