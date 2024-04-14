@@ -57,7 +57,7 @@
     "@adonisjs/lucid": "^20.1.0",
     "@vinejs/vine": "^1.7.1",
     "luxon": "^3.4.4",
-    "mysql2": "^3.9.2",
+    "mysql2": "^3.9.4",
     "reflect-metadata": "^0.2.1"
   },
   "eslintConfig": {
