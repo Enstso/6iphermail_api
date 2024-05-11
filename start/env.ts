@@ -49,5 +49,16 @@ export default await Env.create(new URL('../', import.meta.url), {
   DISCORD_CLIENT_ID: Env.schema.string(),
   DISCORD_CLIENT_SECRET: Env.schema.string(),
   GITHUB_CLIENT_ID: Env.schema.string(),
-  GITHUB_CLIENT_SECRET: Env.schema.string()
+  GITHUB_CLIENT_SECRET: Env.schema.string(),
+
+
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring email providers 
+  |----------------------------------------------------------
+  */
+
+  GMAIL_CLIENT_ID: Env.schema.string(),
+  GMAIL_CLIENT_SECRET: Env.schema.string(),
+  GMAIL_CAllBACK_URL: Env.schema.string(),
 })

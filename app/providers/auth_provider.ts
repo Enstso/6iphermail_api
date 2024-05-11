@@ -1,7 +1,6 @@
 import Auth from "#models/auth";
 import User from "#models/user";
 import { Encryption } from "@adonisjs/core/encryption";
-import encryption from '@adonisjs/core/services/encryption';
 
 export default class authProvider {
 

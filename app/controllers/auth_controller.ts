@@ -33,15 +33,13 @@ export default class AuthController {
         if (!verifyPassword) {
             response.abort('Invalid credentials')
         }
-        this.user_provider.active(user)
-
+    
         return response.safeStatus(200).json({ token: await this.auth_provider.token(user), email: payload.email, message: "Login successful!" })
     }
 
     public async logout({ request, response }: HttpContext) {
         const data = request.all()
         const user: User = await User.findByOrFail('email', data.email)
-        this.user_provider.inactive(user)
         await this.auth_provider.revokeToken(user)
         return response.safeStatus(200).json({ message: "Logout successful!" })
     }

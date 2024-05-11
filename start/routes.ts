@@ -9,6 +9,7 @@
 
 
 import AuthController from '#controllers/auth_controller';
+import MailController from '#controllers/mail_controller';
 import SocialController from '#controllers/social_controller';
 import router from '@adonisjs/core/services/router'
 
@@ -30,3 +31,10 @@ router.group(()=>{
     router.get('/google/callback', [SocialController, 'googleCallback'])
     router.post('/logout',[AuthController,'logout']);
 }).prefix('/api/auth')
+
+
+router.group(()=>{
+    router.get('/authorization/callback',[MailController,'authorizationCallback'])
+    router.get('/authorization',[MailController,'getAuthorizationCode'])
+    router.get('/mails/',[MailController,'getMails'])
+}).prefix('/api/gmail/6iphermail')

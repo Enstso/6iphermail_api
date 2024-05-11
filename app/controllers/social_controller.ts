@@ -54,7 +54,6 @@ export default class SocialController {
             if (exist) {
                 const user_db = await User.findByOrFail('email', user.email)
                 if (await this.auth_provider.exists('id_google_provider', user.id)) {
-                    this.user_provider.active(user_db)
                     return this.auth_provider.token(user_db)
                 }
             } else {
@@ -176,6 +175,5 @@ export default class SocialController {
             }
         }
         return response.abort('Email not verified')
-
     }
 }
