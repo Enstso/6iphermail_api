@@ -2,7 +2,6 @@ import AuthSocial from '#models/auth_social'
 import type { ApplicationService } from '@adonisjs/core/types'
 
 export default class AuthSocialProvider {
-  constructor(protected app: ApplicationService) { }
 
   /**
    * Register bindings to the container

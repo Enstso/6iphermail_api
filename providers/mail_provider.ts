@@ -4,7 +4,6 @@ import env from '#start/env';
 import { Encryption } from '@adonisjs/core/encryption';
 
 export default class MailProvider {
-  constructor(protected app: ApplicationService) { }
 
   /**
    * Register bindings to the container
