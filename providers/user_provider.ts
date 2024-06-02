@@ -1,5 +1,5 @@
 import User from '#models/user'
-
+import AuthPlatform from '#models/auth_platform'
 export default class UserProvider {
 
   /**
@@ -45,6 +45,45 @@ export default class UserProvider {
   }
   async exists(email: string): Promise<boolean> {
     return true ? await User.findBy('email', email) != null : false
+  }
+
+  generateRandomNumber() {
+    const min = 100000;
+    const max = 999999;
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  async codeExists(code: number): Promise<boolean> {
+    return true ? await AuthPlatform.findBy('code', code) != null : false
+  }
+
+  async getCodeByUserId(user_id: number): Promise<number> {
+    const auth = await AuthPlatform.findBy('user_id', user_id);
+    return auth?.code ? auth.code :0;
+  }
+
+  async verifyAuthCode(code: number,email:string): Promise<boolean> {
+    const user = await User.findBy('email', email);
+    if (user) {
+      const auth = await AuthPlatform.findBy('user_id', user.id);
+      if (auth) {
+        return auth.code === code;
+      }
+    }
+    return false;
+  }
+
+  async codeUserExists(user_id: number): Promise<boolean> {
+    return true ? await AuthPlatform.findBy('user_id', user_id) != null : false
+  }
+
+  async generateAuthCode(id: number) {
+    let auth_code = this.generateRandomNumber();
+    while (!await this.codeExists(auth_code)) {
+      auth_code = this.generateRandomNumber();
+      await AuthPlatform.create({ user_id: id, code: auth_code });
+    }
+    return auth_code;
   }
 }
 

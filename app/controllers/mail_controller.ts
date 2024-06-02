@@ -28,7 +28,7 @@ export default class MailController {
             const threads = await this.mail_provider.getThreads(oauth_2_client, session);
 
             session.put('threads', threads);
-            return response.redirect('http://localhost:3000');
+            return response.redirect('http://localhost:5173');
         }
     }
 

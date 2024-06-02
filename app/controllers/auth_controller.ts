@@ -29,6 +29,31 @@ export default class AuthController {
         return response.safeStatus(200).json({ message: "User logged out!" })
     }
 
+    public async generateAuthCode({ auth, response }: HttpContext) {
+        if (!await this.userProvider.codeUserExists(auth.user?.$attributes.id)) {
+            await this.userProvider.generateAuthCode(auth.user?.$attributes.id)
+        } else {
+            const code = this.userProvider.getCodeByUserId(auth.user?.$attributes.id)
+            return response.safeStatus(400).json({ message: "Code already exists!", code: code })
+        }
+    }
+
+    public async verifyAuthCode({ request, auth, response }: HttpContext) {
+        const data = request.all()
+        const { code, email } = data
+        if (await this.userProvider.verifyAuthCode(code, email)) {
+            const user = await User.findBy('email', email);
+            if (user) {
+                await auth.use('web').login(user);
+            } else {
+                return response.safeStatus(400).json({ message: "User not found!" })
+            }
+            return response.safeStatus(200).json({ message: "Code verified!", username: user.username })
+        } else {
+            return response.safeStatus(400).json({ message: "Code not verified!" })
+        }
+    }
+
     public async me({ auth }: HttpContext) {
         return auth.user
     }
