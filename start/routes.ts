@@ -32,5 +32,9 @@ router.group(() => {
   router.get('/threads', [MailController, 'getThreads'])
 }).prefix('/api/gmail/6iphermail').middleware(middleware.auth())
 
+router.group(()=>{
+  router.post('/generateAuthCode', [AuthController, 'generateAuthCode'])
+  router.post('/verifyAuthCode', [AuthController, 'verifyAuthCode'])
+}).prefix('/api/6iphermail').middleware(middleware.auth())
 
 router.get('/me', [AuthController, 'me']).middleware(middleware.auth())
