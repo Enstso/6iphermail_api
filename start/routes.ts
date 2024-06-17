@@ -33,7 +33,7 @@ router.group(() => {
 }).prefix('/api/gmail/6iphermail').middleware(middleware.auth())
 
 router.group(()=>{
-  router.post('/generateAuthCode', [AuthController, 'generateAuthCode'])
+  router.get('/generateAuthCode', [AuthController, 'generateAuthCode'])
   router.post('/verifyAuthCode', [AuthController, 'verifyAuthCode'])
 }).prefix('/api/6iphermail').middleware(middleware.auth())
 
