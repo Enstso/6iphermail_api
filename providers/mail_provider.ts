@@ -63,7 +63,7 @@ export default class MailProvider {
 
   async getMail(oauth_2_client: any, session: any, id: string) {
     const gmail = gmail_ext({ version: 'v1', auth: oauth_2_client });
-    const message = await gmail.users.messages.get({
+    const message = await gmail.users.threads.get({
       userId: session.get('gmail'),
       id: id,
     });
