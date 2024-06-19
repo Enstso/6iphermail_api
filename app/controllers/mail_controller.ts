@@ -21,14 +21,14 @@ export default class MailController {
 
             if (tokens.refresh_token) {
                 const refresh_token = this.mail_provider.encryptData(tokens.refresh_token);
-
+                console.log(session.get('gmail'));
                 await AuthMail.create({ user_id: auth.user?.$attributes.id, email: session.get('gmail'), refresh_token: refresh_token });
             }
 
             const threads = await this.mail_provider.getThreads(oauth_2_client, session);
 
             session.put('threads', threads);
-            return response.redirect('http://localhost:5173');
+            return response.redirect('http://localhost:5173/mails');
         }
     }
 
@@ -37,7 +37,8 @@ export default class MailController {
             session.forget('gmail');
         }
 
-        session.put('gmail', request.input('gmail'));
+        session.put('gmail', request.input('email'));
+
         return response.safeStatus(200).json({ message: 'Gmail added!' });
     }
 

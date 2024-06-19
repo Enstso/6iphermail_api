@@ -27,7 +27,7 @@ router.group(() => {
 
 router.group(() => {
   router.get('/mails', [MailController, 'getGmail'])
-  router.get('/mail/identifier', [MailController, 'identifierGmail'])
+  router.post('/mail/identifier', [MailController, 'identifierGmail'])
   router.get('/mail/:id', [MailController, 'getMail'])
   router.get('/threads', [MailController, 'getThreads'])
 }).prefix('/api/gmail/6iphermail').middleware(middleware.auth())

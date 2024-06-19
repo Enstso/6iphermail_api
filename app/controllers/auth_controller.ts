@@ -33,8 +33,9 @@ export default class AuthController {
         if (!await this.userProvider.codeUserExists(auth.user?.$attributes.id)) {
             await this.userProvider.generateAuthCode(auth.user?.$attributes.id)
         } else {
-            const code = this.userProvider.getCodeByUserId(auth.user?.$attributes.id)
-            return response.safeStatus(400).json({ message: "Code already exists!", code: code })
+            const code = await this.userProvider.getCodeByUserId(auth.user?.$attributes.id)
+            console.log(code)
+            return response.safeStatus(200).json({ message: "Code already exists!", code: code })
         }
     }
 
@@ -54,7 +55,7 @@ export default class AuthController {
         }
     }
 
-    public async me({ auth,response }: HttpContext) {
-        return response.safeStatus(200).json({ user: auth.user?.$attributes.username})
+    public async me({ auth, response }: HttpContext) {
+        return response.safeStatus(200).json({ username: auth.user?.$attributes.username, email: auth.user?.$attributes.email})
     }
 }
