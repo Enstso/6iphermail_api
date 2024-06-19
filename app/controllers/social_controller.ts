@@ -4,12 +4,14 @@ import AuthSocialProvider from '#providers/auth_social_provider'
 import UserProvider from '#providers/user_provider'
 import User from '#models/user';
 import { oauthValidator } from '#validators/oauth_user';
+import { url } from 'inspector';
 
 @inject()
 export default class SocialController {
     constructor(protected authSocialProvider: AuthSocialProvider, protected userProvider: UserProvider) { }
-    googleRedirect({ ally }: HttpContext) {
-        return ally.use('google').redirect();
+    async googleRedirect({ ally,response }: HttpContext) {
+        const url = await ally.use('google').redirectUrl()
+        return response.json({'url':url})
     }
     async googleCallback({ ally, auth, response }: HttpContext) {
 
@@ -46,22 +48,24 @@ export default class SocialController {
             if (await this.userProvider.exists(user.email)) {
                 const user_db = await User.findByOrFail('email', user.email)
                 if (await this.authSocialProvider.exists('id_google_provider', user.id)) {
-                    return auth.use('web').login(user_db)
+                    await auth.use('web').login(user_db)
+                    return response.redirect('http://localhost:5173')
                 }
             } else {
                 const validate = await oauthValidator.validate({ username: user.nickName, email: user.email })
                 await this.userProvider.create(validate, true)
                 const user_db = await User.findByOrFail('email', user.email)
                 this.authSocialProvider.create(user_db.id, { id_google_provider: user.id })
-                return response.safeStatus(201)
+                return response.redirect('http://localhost:5173/login')
             }
         }
         return response.abort('Email not verified')
 
     }
 
-    githubRedirect({ ally }: HttpContext) {
-        return ally.use('github').redirect();
+    async githubRedirect({ ally, response }: HttpContext) {
+        const url = await ally.use('github').redirectUrl()
+        return response.json({ 'url': url })
     }
     async githubCallback({ ally, auth, response }: HttpContext) {
 
@@ -98,26 +102,27 @@ export default class SocialController {
          */
 
         const user = await github.user();
-
         if (user.emailVerificationState === 'verified') {
             if (await this.userProvider.exists(user.email)) {
                 const user_db = await User.findByOrFail('email', user.email)
                 if (await this.authSocialProvider.exists('id_github_provider', user.id)) {
-                    return auth.use('web').login(user_db)
+                    await auth.use('web').login(user_db)
+                    return response.redirect('http://localhost:5173')
                 }
             } else {
                 const validate = await oauthValidator.validate({ username: user.nickName, email: user.email })
                 await this.userProvider.create(validate, true)
                 const user_db = await User.findByOrFail('email', user.email)
                 this.authSocialProvider.create(user_db.id, { id_github_provider: user.id })
-                return response.safeStatus(201)
+                return response.redirect('http://localhost:5173/login')
             }
         }
 
     }
 
-    discordRedirect({ ally }: HttpContext) {
-        return ally.use('discord').redirect();
+    async discordRedirect({ ally, response }: HttpContext) {
+        const url = await ally.use('discord').redirectUrl()
+        return response.json({ 'url': url })
     }
 
     async discordCallback({ ally, auth, response }: HttpContext) {
@@ -149,18 +154,20 @@ export default class SocialController {
          * Access user info
          */
         const user = await discord.user();
+        console.log(user);
         if (user.emailVerificationState === 'verified') {
             if (await this.userProvider.exists(user.email)) {
                 const user_db = await User.findByOrFail('email', user.email)
                 if (await this.authSocialProvider.exists('id_discord_provider', user.id)) {
-                    return auth.use('web').login(user_db)
+                    await auth.use('web').login(user_db)
+                    return response.redirect('http://localhost:5173')
                 }
             } else {
                 const validate = await oauthValidator.validate({ username: user.nickName, email: user.email })
                 await this.userProvider.create(validate, true)
                 const user_db = await User.findByOrFail('email', user.email)
                 this.authSocialProvider.create(user_db.id, { id_discord_provider: user.id })
-                return response.safeStatus(201)
+                return response.redirect('http://localhost:5173/login')
             }
         }
     }

@@ -23,7 +23,7 @@ router.group(() => {
   router.get('/google', [SocialController, 'googleRedirect'])
   router.get('/google/callback', [SocialController, 'googleCallback'])
   router.get('/logout', [AuthController, 'logout']);
-}).prefix('api/auth')
+}).prefix('/api/auth')
 
 router.group(() => {
   router.get('/mails', [MailController, 'getGmail'])
@@ -32,9 +32,9 @@ router.group(() => {
   router.get('/threads', [MailController, 'getThreads'])
 }).prefix('/api/gmail/6iphermail').middleware(middleware.auth())
 
-router.group(()=>{
+router.group(() => {
   router.get('/generateAuthCode', [AuthController, 'generateAuthCode'])
   router.post('/verifyAuthCode', [AuthController, 'verifyAuthCode'])
+  router.get('/me', [AuthController, 'me'])
 }).prefix('/api/6iphermail').middleware(middleware.auth())
 
-router.get('/me', [AuthController, 'me']).middleware(middleware.auth())

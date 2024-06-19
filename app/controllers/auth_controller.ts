@@ -54,7 +54,7 @@ export default class AuthController {
         }
     }
 
-    public async me({ auth }: HttpContext) {
-        return auth.user
+    public async me({ auth,response }: HttpContext) {
+        return response.safeStatus(200).json({ user: auth.user?.$attributes.username})
     }
 }
