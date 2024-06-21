@@ -2,6 +2,7 @@ import type { ApplicationService } from '@adonisjs/core/types'
 import { auth as auth_gmail, gmail as gmail_ext } from '@googleapis/gmail';
 import env from '#start/env';
 import { Encryption } from '@adonisjs/core/encryption';
+import { stat } from 'fs';
 
 export default class MailProvider {
 
@@ -52,23 +53,105 @@ export default class MailProvider {
     );
   }
 
-  async getThreads(oauth_2_client: any, session: any) {
+  async getThreadsUnread(oauth_2_client: any, session: any) {
     const gmail = gmail_ext({ version: 'v1', auth: oauth_2_client });
     const threads = await gmail.users.threads.list({
       userId: session.get('gmail'),
+      maxResults: 10,
+      q: 'is:unread',
+    });
+
+    return threads;
+  }
+  async getThreadsRead(oauth_2_client: any, session: any) {
+    const gmail = gmail_ext({ version: 'v1', auth: oauth_2_client });
+    const threads = await gmail.users.threads.list({
+      userId: session.get('gmail'),
+      maxResults: 10,
+      q: 'is:read',
     });
 
     return threads;
   }
 
-  async getMail(oauth_2_client: any, session: any, id: string) {
+  extratData(headers: any) {
+    const headerNames = ["From", "Subject", "Date"];
+    const extractedHeaders: { [key: string]: string } = {};
+    headers.forEach(header => {
+      if (headerNames.includes(header.name)) {
+          extractedHeaders[header.name] = header.value;
+      }
+  });
+  return extractedHeaders;
+  }
+
+  async getMail(oauth_2_client: any, session: any, id: string, is_read: boolean) {
     const gmail = gmail_ext({ version: 'v1', auth: oauth_2_client });
     const message = await gmail.users.threads.get({
       userId: session.get('gmail'),
       id: id,
     });
 
-    return message;
+    const extractHeaders = this.extratData(message.data.messages[0].payload?.headers);
+    
+    const expeditor = extractHeaders["From"];
+    const receiver = session.get('gmail');
+    const subject = extractHeaders["Subject"];
+    const date = extractHeaders["Date"];
+    const name = this.getUsernameFromEmail(expeditor);
+    const body64 = message.data.messages[0].payload?.body.data || message.data.messages[0].payload?.parts[1].body.data;
+    //console.log(body64);
+
+    const res = await fetch('http://127.0.0.1:5000/treating_mail', {
+      method: 'POST',
+      body: JSON.stringify({ "base64_text": body64 }),
+      headers: { 'Content-Type': 'application/json' },
+
+    })
+    
+    let data = await res.text();
+    if(!res.ok) {
+      data = "Errorr";
+    }
+    const score = data.charAt(data.length - 1);
+    data = data.slice(0, data.length - 1);
+    const score_status = this.scoreMail(parseInt(score));
+    console.log(score_status);
+    return { data: data, score: score_status, expeditor: expeditor, receiver: receiver, subject: subject, date: date, id: id, is_read: is_read, name: name};
+  }
+
+  getUsernameFromEmail(email: string): string | undefined | null {
+    // Trouver l'index du caractère '@'
+    const atIndex = email.indexOf('<');
+
+    // Si l'index est inférieur à zéro, cela signifie que '@' n'a pas été trouvé dans l'email
+    if (atIndex < 0) {
+      return null; // Retourner null si l'email est invalide
+    }
+
+    // Extraire le nom d'utilisateur avant '@'
+    const username = email.substring(0, atIndex);
+
+    return username;
+  }
+
+  scoreMail(data: number) {
+    let status: string = "";
+    switch (true) {
+      case data >= 0 && data < 4:
+        status = "Low risk";
+        break;
+      case data >= 4 && data < 7:
+        status = "Medium risk";
+        break;
+      case data >= 7 && data <= 10:
+        status = "High risk";
+        break;
+      default:
+        status = "Invalid";
+        break;
+    }
+    return status;
   }
 
   generateAuthUrl(oauth_2_client: any) {
@@ -81,6 +164,5 @@ export default class MailProvider {
       scope: scopes,
     });
   }
-
 
 }
