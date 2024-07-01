@@ -28,6 +28,7 @@ router.group(() => {
 
 router.group(() => {
   router.get('/mails', [MailController, 'getGmail'])
+  router.get('/app-mails', [MailController, 'getGmailv2'])
   router.post('/mail/identifier', [MailController, 'identifierGmail'])
   //router.get('/mail/:id', [MailController, 'getMail'])
   router.get('/whois', [MailController, 'whoamiGmail'])
