@@ -22,7 +22,6 @@ export default class MailController {
 
             if (tokens.refresh_token) {
                 const refresh_token = this.mail_provider.encryptData(tokens.refresh_token);
-                console.log(session.get('gmail'));
                 await AuthMail.updateOrCreate({ email: session.get('gmail') }, { user_id: auth.user?.$attributes.id, email: session.get('gmail'), refresh_token: refresh_token });
             }
 

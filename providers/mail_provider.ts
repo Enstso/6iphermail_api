@@ -107,8 +107,7 @@ export default class MailProvider {
     const subject = extractHeaders["Subject"];
     const date = extractHeaders["Date"];
     const name = this.getUsernameFromEmail(expeditor);
-    const body64 = message.data.messages[0].payload?.body.data || message.data.messages[0].payload?.parts[1].body.data;
-    //console.log(body64);
+    const body64 = message.data.messages[0].payload?.body.data || message.data.messages[0].payload?.parts[1]?.body.data || 'contact the your hosting mails for more information';
 
     const res = await fetch('http://127.0.0.1:5000/treating_mail', {
       method: 'POST',
@@ -117,14 +116,16 @@ export default class MailProvider {
 
     })
 
-    let data = await res.text();
+    let data = await res.json();
+    let score_status = "";
+    console.log(data);
     if (!res.ok) {
       data = "Errorr";
     }
-    const score = data.charAt(data.length - 1);
-    data = data.slice(0, data.length - 1);
-    const score_status = this.scoreMail(parseInt(score));
-    console.log(score_status);
+
+    score_status = this.scoreMail(data.score);
+    data = data.content;
+
     return { data: data, score: score_status, expeditor: expeditor, receiver: receiver, subject: subject, date: date, id: id, is_read: is_read, name: name };
   }
 
@@ -147,13 +148,13 @@ export default class MailProvider {
     let status: string = "";
     switch (true) {
       case data >= 0 && data < 4:
-        status = "Low risk";
+        status = "Potential Low risk";
         break;
-      case data >= 4 && data < 7:
-        status = "Medium risk";
+      case data >= 4 && data < 8:
+        status = "Potential Medium risk";
         break;
-      case data >= 7 && data <= 10:
-        status = "High risk";
+      case data >= 8:
+        status = "Potential High risk";
         break;
       default:
         status = "Invalid";
