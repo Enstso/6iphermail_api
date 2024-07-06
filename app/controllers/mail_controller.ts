@@ -75,11 +75,12 @@ export default class MailController {
     }
 
     async identifierGmail({ request, auth, session, response }: HttpContext) {
-        if (session.has('gmail')) {
+        if (session.has('gmail') && session.has('nbMails')) {
             session.forget('gmail');
+            session.forget('nbMails');
         }
         session.put('gmail', request.input('email'));
-
+        session.put('nbMails', request.input('nbMails'));
         return response.safeStatus(200).json({ message: 'Gmail added!' });
     }
     /*    async getMail({ request, auth, session, response }: HttpContext) {

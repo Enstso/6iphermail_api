@@ -65,7 +65,7 @@ export default class MailProvider {
     const gmail = gmail_ext({ version: 'v1', auth: oauth_2_client });
     const threads = await gmail.users.threads.list({
       userId: session.get('gmail'),
-      maxResults: 10,
+      maxResults: session.get('nbMails'),
       q: 'is:unread',
     });
 
@@ -75,7 +75,7 @@ export default class MailProvider {
     const gmail = gmail_ext({ version: 'v1', auth: oauth_2_client });
     const threads = await gmail.users.threads.list({
       userId: session.get('gmail'),
-      maxResults: 10,
+      maxResults: session.get('nbMails'),
       q: 'is:read',
     });
 

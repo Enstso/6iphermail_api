@@ -67,7 +67,7 @@ export default class UserProvider {
     if (user) {
       const auth = await AuthPlatform.findBy('user_id', user.id);
       if (auth) {
-        return auth.code === code;
+        return Number(auth.code) === Number(code);
       }
     }
     return false;

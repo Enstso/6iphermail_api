@@ -4,7 +4,6 @@ import AuthSocialProvider from '#providers/auth_social_provider'
 import UserProvider from '#providers/user_provider'
 import User from '#models/user';
 import { oauthValidator } from '#validators/oauth_user';
-import { url } from 'inspector';
 
 @inject()
 export default class SocialController {
