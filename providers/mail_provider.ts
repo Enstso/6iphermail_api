@@ -53,6 +53,14 @@ export default class MailProvider {
     );
   }
 
+  authOauthGmailv2() {
+    return new auth_gmail.OAuth2(
+      env.get('GMAIL_CLIENT_ID'),
+      env.get('GMAIL_CLIENT_SECRET'),
+      'http://localhost:3333/api/gmail/6iphermail/mails'
+    );
+  }
+
   async getThreadsUnread(oauth_2_client: any, session: any) {
     const gmail = gmail_ext({ version: 'v1', auth: oauth_2_client });
     const threads = await gmail.users.threads.list({
@@ -79,10 +87,10 @@ export default class MailProvider {
     const extractedHeaders: { [key: string]: string } = {};
     headers.forEach(header => {
       if (headerNames.includes(header.name)) {
-          extractedHeaders[header.name] = header.value;
+        extractedHeaders[header.name] = header.value;
       }
-  });
-  return extractedHeaders;
+    });
+    return extractedHeaders;
   }
 
   async getMail(oauth_2_client: any, session: any, id: string, is_read: boolean) {
@@ -93,13 +101,13 @@ export default class MailProvider {
     });
 
     const extractHeaders = this.extratData(message.data.messages[0].payload?.headers);
-    
+
     const expeditor = extractHeaders["From"];
     const receiver = session.get('gmail');
     const subject = extractHeaders["Subject"];
     const date = extractHeaders["Date"];
     const name = this.getUsernameFromEmail(expeditor);
-    const body64 = message.data.messages[0].payload?.body.data || message.data.messages[0].payload?.parts[1].body.data;
+    const body64 = message.data.messages[0].payload?.body.data || message.data.messages[0].payload?.parts[1].body.data;
     //console.log(body64);
 
     const res = await fetch('http://127.0.0.1:5000/treating_mail', {
@@ -108,16 +116,16 @@ export default class MailProvider {
       headers: { 'Content-Type': 'application/json' },
 
     })
-    
+
     let data = await res.text();
-    if(!res.ok) {
+    if (!res.ok) {
       data = "Errorr";
     }
     const score = data.charAt(data.length - 1);
     data = data.slice(0, data.length - 1);
     const score_status = this.scoreMail(parseInt(score));
     console.log(score_status);
-    return { data: data, score: score_status, expeditor: expeditor, receiver: receiver, subject: subject, date: date, id: id, is_read: is_read, name: name};
+    return { data: data, score: score_status, expeditor: expeditor, receiver: receiver, subject: subject, date: date, id: id, is_read: is_read, name: name };
   }
 
   getUsernameFromEmail(email: string): string | undefined | null {
