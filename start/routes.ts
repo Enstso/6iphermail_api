@@ -37,6 +37,7 @@ router.group(() => {
 
 router.group(() => {
   router.get('/generateAuthCode', [AuthController, 'generateAuthCode'])
+  router.post('/contacts', [MailController, 'sendToSupport'])
   router.get('/me', [AuthController, 'me'])
 }).prefix('/api/6iphermail').middleware(middleware.auth())
 

@@ -120,4 +120,11 @@ export default class MailController {
         return response.safeStatus(200).json({ threads: threads });
     }
 
+    async sendToSupport({ request, response }: HttpContext) {
+        const data = request.all();
+        const { email, username, message } = data;
+        await this.mail_provider.sendToSupport(email, username, message);
+        return response.safeStatus(200).json({ message: 'Email sent!' });
+    }
+
 }

@@ -34,7 +34,6 @@ export default class AuthController {
             await this.userProvider.generateAuthCode(auth.user?.$attributes.id)
         } else {
             const code = await this.userProvider.getCodeByUserId(auth.user?.$attributes.id)
-            console.log(code)
             return response.safeStatus(200).json({ message: "Code already exists!", code: code })
         }
     }

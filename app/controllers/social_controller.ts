@@ -153,7 +153,6 @@ export default class SocialController {
          * Access user info
          */
         const user = await discord.user();
-        console.log(user);
         if (user.emailVerificationState === 'verified') {
             if (await this.userProvider.exists(user.email)) {
                 const user_db = await User.findByOrFail('email', user.email)
