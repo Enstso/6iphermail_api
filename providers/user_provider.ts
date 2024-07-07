@@ -87,13 +87,12 @@ export default class UserProvider {
   }
   // Update the user's information
 
-  async updateAccountUser(email: string, username: string, password: string, oldPassword: string) {
-    const user = await User.findBy('email', email);
+  async updateAccountUser(id: number|undefined, username: string, password: string, oldPassword: string) {
+    const user = await User.findOrFail(id);
     if (await hash.verify(await user?.$attributes?.password, oldPassword)) {
-      User.query().where('email', email).update({
-        username: username,
-        password: await hash.make(password)
-      })
+      user.username = username;
+      user.password =  password;
+      await user.save();
       return true;
     }
     return false;

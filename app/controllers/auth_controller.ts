@@ -37,7 +37,7 @@ export default class AuthController {
         const { email, username, password, oldPassword } = data;
         if (auth.user?.$attributes.oauth) return response.safeStatus(400).json({ message: "User is oauth!" });
         if (email == auth.user?.$attributes.email) {
-            const res = await this.userProvider.updateAccountUser(email, username, password, oldPassword);
+            const res = await this.userProvider.updateAccountUser(auth.user?.id, username, password, oldPassword);
             const message = res ? "User updated!" : "User not updated!";
             return response.safeStatus(200).json({ message: message });
         }
