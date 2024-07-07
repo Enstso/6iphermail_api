@@ -42,6 +42,8 @@ export default class MailProvider {
     return encryption.decrypt(data);
   }
 
+  // Send a message to the support team
+
   async sendToSupport(email: string, username: string, message: string) {
     fetch(env.get('URL_BOT_DISCORD'), {
       method: 'POST',
@@ -59,6 +61,7 @@ export default class MailProvider {
       });
   }
 
+  // Gmail API
   authOauthGmail() {
     return new auth_gmail.OAuth2(
       env.get('GMAIL_CLIENT_ID'),
@@ -67,13 +70,8 @@ export default class MailProvider {
     );
   }
 
-  authOauthGmailv2() {
-    return new auth_gmail.OAuth2(
-      env.get('GMAIL_CLIENT_ID'),
-      env.get('GMAIL_CLIENT_SECRET'),
-      'http://localhost:3333/api/gmail/6iphermail/mails'
-    );
-  }
+
+// Get the unread threads
 
   async getThreadsUnread(oauth_2_client: any, session: any) {
     const gmail = gmail_ext({ version: 'v1', auth: oauth_2_client });
@@ -84,6 +82,9 @@ export default class MailProvider {
     });
     return threads;
   }
+
+  // Get the read threads
+
   async getThreadsRead(oauth_2_client: any, session: any) {
     const gmail = gmail_ext({ version: 'v1', auth: oauth_2_client });
     const threads = await gmail.users.threads.list({
@@ -93,6 +94,8 @@ export default class MailProvider {
     });
     return threads;
   }
+
+  // Extract the data from the headers
 
   extratData(headers: any) {
     const headerNames = ["From", "Subject", "Date"];
@@ -105,6 +108,8 @@ export default class MailProvider {
 
     return extractedHeaders;
   }
+
+  // Get the mail in web
 
   async getMail(oauth_2_client: any, session: any, id: string, is_read: boolean) {
     let score_status = "";
@@ -159,6 +164,8 @@ export default class MailProvider {
     }
     return status;
   }
+
+  // Generate the URL for the user grant access to the app to get his mails
 
   generateAuthUrl(oauth_2_client: any) {
     const scopes = [

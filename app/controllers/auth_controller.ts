@@ -8,7 +8,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 @inject()
 export default class AuthController {
     constructor(protected userProvider: UserProvider) { }
-    
+
     public async register({ request, response }: HttpContext) {
         const data = request.all()
         const validate = await registerValidator.validate(data);
@@ -30,6 +30,7 @@ export default class AuthController {
         return response.safeStatus(200).json({ message: "User logged out!" })
     }
 
+    // Generate a random code and send it to the user's email
     public async generateAuthCode({ auth, response }: HttpContext) {
         if (!await this.userProvider.codeUserExists(auth.user?.$attributes.id)) {
             await this.userProvider.generateAuthCode(auth.user?.$attributes.id)
@@ -38,6 +39,7 @@ export default class AuthController {
             return response.safeStatus(200).json({ message: "Code already exists!", code: code })
         }
     }
+    // Verify the code sent to the user's email
 
     public async verifyAuthCode({ request, auth, response }: HttpContext) {
         const data = request.all()
@@ -54,6 +56,7 @@ export default class AuthController {
             return response.safeStatus(400).json({ message: "Code not verified!" })
         }
     }
+    // Get the user's information 
 
     public async me({ auth, response }: HttpContext) {
         return response.safeStatus(200).json({ username: auth.user?.$attributes.username, email: auth.user?.$attributes.email})

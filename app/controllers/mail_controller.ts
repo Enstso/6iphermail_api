@@ -7,6 +7,8 @@ import MailProvider from '#providers/mail_provider';
 export default class MailController {
     constructor(protected mail_provider: MailProvider) { }
 
+    // Get the Gmail URL and get the unread and read emails in web platform
+
     async getGmail({ request, auth, session, response }: HttpContext) {
         const oauth_2_client = this.mail_provider.authOauthGmail();
         const url = this.mail_provider.generateAuthUrl(oauth_2_client);
@@ -34,9 +36,10 @@ export default class MailController {
             return response.redirect('http://localhost:5173/mails');
         }
     }
+    // Get the Gmail URL and get the unread and read emails in desktop and mobile platforms
 
     async getGmailv2({ request, auth, session, response }: HttpContext) {
-        const oauth_2_client = this.mail_provider.authOauthGmailv2();
+        const oauth_2_client = this.mail_provider.authOauthGmail();
         const url = this.mail_provider.generateAuthUrl(oauth_2_client);
         let mails_unread = [];
         let mails_read = [];
@@ -63,7 +66,9 @@ export default class MailController {
         }
     }
 
-    async identifierGmail({ request, auth, session, response }: HttpContext) {
+    // Add the Gmail identifier and the number of mails to get
+
+    async identifierGmail({ request, session, response }: HttpContext) {
         if (session.has('gmail') && session.has('nbMails')) {
             session.forget('gmail');
             session.forget('nbMails');
@@ -73,14 +78,18 @@ export default class MailController {
         return response.safeStatus(200).json({ message: 'Gmail added!' });
     }
 
-    async whoamiGmail({ request, auth, session, response }: HttpContext) {
+    // Get the Gmail identifier
+
+    async whoamiGmail({ session, response }: HttpContext) {
         if (!session.has('gmail')) {
             return response.abort('Gmail not found!');
         }
         return response.safeStatus(200).json({ email: session.get('gmail') });
     }
 
-    async getThreads({ request, auth, session, response }: HttpContext) {
+    // Get threads from the session 
+
+    async getThreads({ session, response }: HttpContext) {
         if (!session.has('threads_unread') && !session.has('threads_read')) {
             return response.abort('threads not found!');
         }
@@ -89,6 +98,8 @@ export default class MailController {
         threads.push(session.get('threads_read'));
         return response.safeStatus(200).json({ threads: threads });
     }
+
+    // Send an email to the support
 
     async sendToSupport({ request, response }: HttpContext) {
         const data = request.all();
