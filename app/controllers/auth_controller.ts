@@ -30,7 +30,22 @@ export default class AuthController {
         return response.safeStatus(200).json({ message: "User logged out!" })
     }
 
+    // Update the user's information
+
+    public async updateAccountUser({ auth,request, response }: HttpContext) {
+        const data = request.all()
+        const { email, username, password, oldPassword } = data;
+        if (auth.user?.$attributes.oauth) return response.safeStatus(400).json({ message: "User is oauth!" });
+        if (email == auth.user?.$attributes.email) {
+            const res = await this.userProvider.updateAccountUser(email, username, password, oldPassword);
+            const message = res ? "User updated!" : "User not updated!";
+            return response.safeStatus(200).json({ message: message });
+        }
+        return response.safeStatus(400).json({ message: "Email not match!" });
+    }
+
     // Generate a random code and send it to the user's email
+
     public async generateAuthCode({ auth, response }: HttpContext) {
         if (!await this.userProvider.codeUserExists(auth.user?.$attributes.id)) {
             await this.userProvider.generateAuthCode(auth.user?.$attributes.id)
@@ -39,6 +54,7 @@ export default class AuthController {
             return response.safeStatus(200).json({ message: "Code already exists!", code: code })
         }
     }
+
     // Verify the code sent to the user's email
 
     public async verifyAuthCode({ request, auth, response }: HttpContext) {
@@ -56,9 +72,10 @@ export default class AuthController {
             return response.safeStatus(400).json({ message: "Code not verified!" })
         }
     }
+
     // Get the user's information 
 
     public async me({ auth, response }: HttpContext) {
-        return response.safeStatus(200).json({ username: auth.user?.$attributes.username, email: auth.user?.$attributes.email})
+        return response.safeStatus(200).json({ username: auth.user?.$attributes.username, email: auth.user?.$attributes.email })
     }
 }

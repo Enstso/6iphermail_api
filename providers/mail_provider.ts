@@ -71,7 +71,7 @@ export default class MailProvider {
   }
 
 
-// Get the unread threads
+  // Get the unread threads
 
   async getThreadsUnread(oauth_2_client: any, session: any) {
     const gmail = gmail_ext({ version: 'v1', auth: oauth_2_client });

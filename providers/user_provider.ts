@@ -1,5 +1,6 @@
 import User from '#models/user'
 import AuthPlatform from '#models/auth_platform'
+import hash from '@adonisjs/core/services/hash'
 export default class UserProvider {
 
   /**
@@ -83,6 +84,19 @@ export default class UserProvider {
     }
     await AuthPlatform.create({ user_id: id, code: auth_code });
     return auth_code;
+  }
+  // Update the user's information
+
+  async updateAccountUser(email: string, username: string, password: string, oldPassword: string) {
+    const user = await User.findBy('email', email);
+    if (await hash.verify(await user?.$attributes?.password, oldPassword)) {
+      User.query().where('email', email).update({
+        username: username,
+        password: await hash.make(password)
+      })
+      return true;
+    }
+    return false;
   }
 
 }
