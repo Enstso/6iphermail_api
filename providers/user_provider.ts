@@ -28,7 +28,6 @@ export default class UserProvider {
   async shutdown() { }
 
   async create({ username, email, password }: { username?: string, email?: string, password?: string }, oauth?: boolean): Promise<void> {
-
     if (oauth) {
       await User.create({
         username: username,
@@ -59,10 +58,10 @@ export default class UserProvider {
 
   async getCodeByUserId(user_id: number): Promise<number> {
     const auth = await AuthPlatform.findBy('user_id', user_id);
-    return auth?.code ? auth.code :0;
+    return auth?.code ? auth.code : 0;
   }
 
-  async verifyAuthCode(code: number,email:string): Promise<boolean> {
+  async verifyAuthCode(code: number, email: string): Promise<boolean> {
     const user = await User.findBy('email', email);
     if (user) {
       const auth = await AuthPlatform.findBy('user_id', user.id);
@@ -79,11 +78,12 @@ export default class UserProvider {
 
   async generateAuthCode(id: number) {
     let auth_code = this.generateRandomNumber();
-    while (!await this.codeExists(auth_code)) {
+    while (await this.codeExists(auth_code)) {
       auth_code = this.generateRandomNumber();
-      await AuthPlatform.create({ user_id: id, code: auth_code });
     }
+    await AuthPlatform.create({ user_id: id, code: auth_code });
     return auth_code;
   }
+
 }
 

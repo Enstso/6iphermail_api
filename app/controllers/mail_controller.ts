@@ -14,21 +14,16 @@ export default class MailController {
         let mails_read = [];
         if (!request.input('code')) {
             return response.safeStatus(200).json({ url: url });
-
         } else {
             const { tokens } = await oauth_2_client.getToken(request.input('code'));
-
             oauth_2_client.setCredentials(tokens);
-
             if (tokens.refresh_token) {
                 const refresh_token = this.mail_provider.encryptData(tokens.refresh_token);
                 await AuthMail.updateOrCreate({ email: session.get('gmail') }, { user_id: auth.user?.$attributes.id, email: session.get('gmail'), refresh_token: refresh_token });
             }
-
             const threads_unread = await this.mail_provider.getThreadsUnread(oauth_2_client, session);
             const threads_read = await this.mail_provider.getThreadsRead(oauth_2_client, session);
             for (const thread of threads_unread.data.threads) {
-                console.log(thread.id);
                 mails_unread.push(await this.mail_provider.getMail(oauth_2_client, session, thread.id, false));
             }
             for (const thread of threads_read.data.threads) {
@@ -49,19 +44,14 @@ export default class MailController {
             return response.safeStatus(200).json({ url: url });
         } else {
             const { tokens } = await oauth_2_client.getToken(request.input('code'));
-
             oauth_2_client.setCredentials(tokens);
-
             if (tokens.refresh_token) {
                 const refresh_token = this.mail_provider.encryptData(tokens.refresh_token);
-                console.log(session.get('gmail'));
                 await AuthMail.updateOrCreate({ email: session.get('gmail') }, { user_id: auth.user?.$attributes.id, email: session.get('gmail'), refresh_token: refresh_token });
             }
-
             const threads_unread = await this.mail_provider.getThreadsUnread(oauth_2_client, session);
             const threads_read = await this.mail_provider.getThreadsRead(oauth_2_client, session);
             for (const thread of threads_unread.data.threads) {
-                console.log(thread.id);
                 mails_unread.push(await this.mail_provider.getMail(oauth_2_client, session, thread.id, false));
             }
             for (const thread of threads_read.data.threads) {
@@ -82,31 +72,11 @@ export default class MailController {
         session.put('nbMails', request.input('nbMails'));
         return response.safeStatus(200).json({ message: 'Gmail added!' });
     }
-    /*    async getMail({ request, auth, session, response }: HttpContext) {
-            if (!session.has('gmail')) {
-                return response.abort('Gmail not found!');
-            }
-    
-            const id_mail = request.param('id');
-            const oauth_2_client = this.mail_provider.authOauthGmail();
-            const authMail = await AuthMail.findByOrFail('user_id', auth.user?.$attributes.id);
-    
-            const refresh_token: string | null = this.mail_provider.decryptData(authMail.refresh_token);
-    
-            oauth_2_client.setCredentials({ refresh_token: refresh_token });
-    
-            const message = await this.mail_provider.getMail(oauth_2_client, session, id_mail);
-    
-            return response.safeStatus(200).json({ message: message });
-    
-        }
-    */
 
     async whoamiGmail({ request, auth, session, response }: HttpContext) {
         if (!session.has('gmail')) {
             return response.abort('Gmail not found!');
         }
-
         return response.safeStatus(200).json({ email: session.get('gmail') });
     }
 

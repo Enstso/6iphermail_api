@@ -31,6 +31,7 @@ export default class AuthSocialProvider {
   async create(user_id: number, { id_discord_provider, id_google_provider, id_github_provider }: { id_discord_provider?: string, id_google_provider?: string, id_github_provider?: string }) {
     AuthSocial.create({ user_id, id_discord_provider, id_google_provider, id_github_provider })
   }
+
   async update(user_id: number, { id_discord_provider, id_google_provider, id_github_provider }: { id_discord_provider?: string, id_google_provider?: string, id_github_provider?: string }) {
     AuthSocial.query().where('user_id', user_id).update({
       id_discord_provider: id_discord_provider,
@@ -38,9 +39,10 @@ export default class AuthSocialProvider {
       id_github_provider: id_github_provider
     })
   }
-  async exists(type_provider:string,id_provider:string): Promise<boolean> {
-    return await true ? AuthSocial.findBy(type_provider, id_provider) != null : false
-}
+
+  async exists(type_provider: string, id_provider: string): Promise<boolean> {
+    return true ? AuthSocial.findBy(type_provider, id_provider) != null : false
+  }
 
 }
 

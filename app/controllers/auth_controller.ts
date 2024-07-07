@@ -8,6 +8,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 @inject()
 export default class AuthController {
     constructor(protected userProvider: UserProvider) { }
+    
     public async register({ request, response }: HttpContext) {
         const data = request.all()
         const validate = await registerValidator.validate(data);

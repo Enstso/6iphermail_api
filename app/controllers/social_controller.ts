@@ -8,10 +8,12 @@ import { oauthValidator } from '#validators/oauth_user';
 @inject()
 export default class SocialController {
     constructor(protected authSocialProvider: AuthSocialProvider, protected userProvider: UserProvider) { }
-    async googleRedirect({ ally,response }: HttpContext) {
+
+    async googleRedirect({ ally, response }: HttpContext) {
         const url = await ally.use('google').redirectUrl()
-        return response.json({'url':url})
+        return response.json({ 'url': url })
     }
+
     async googleCallback({ ally, auth, response }: HttpContext) {
 
         const google = ally.use('google')
@@ -59,13 +61,13 @@ export default class SocialController {
             }
         }
         return response.abort('Email not verified')
-
     }
 
     async githubRedirect({ ally, response }: HttpContext) {
         const url = await ally.use('github').redirectUrl()
         return response.json({ 'url': url })
     }
+
     async githubCallback({ ally, auth, response }: HttpContext) {
 
         const github = ally.use('github')
